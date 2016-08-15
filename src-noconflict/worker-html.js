@@ -2943,14 +2943,22 @@ Tokenizer.prototype.tokenize = function(source) {
 		return true;
 	}
 
+	attribute_value_react_state.noUnclosedBrackets = 0;
+
 	function attribute_value_react_state(buffer) {
 		var data = buffer.char();
 		if (data === InputStream.EOF) {
 			tokenizer._parseError("eof-in-attribute-value-single-quote");
 			buffer.unget(data);
 			tokenizer.setState(data_state);
+		} else if (data === "{" ) {
+			attribute_value_react_state.noUnclosedBrackets += 1;
 		} else if (data === "}") {
-			tokenizer.setState(after_attribute_value_state);
+			if ( attribute_value_react_state.noUnclosedBrackets === 0 ) {
+				tokenizer.setState(after_attribute_value_state);
+			} else {
+				attribute_value_react_state.noUnclosedBrackets -= 1;
+			}
 		} else if (data === '&') {
 			this._additionalAllowedCharacter = "}";
 			tokenizer.setState(character_reference_in_attribute_value_state);
@@ -2958,7 +2966,7 @@ Tokenizer.prototype.tokenize = function(source) {
 			tokenizer._parseError("invalid-codepoint");
 			tokenizer._currentAttribute().nodeValue += "\uFFFD";
 		} else {
-			tokenizer._currentAttribute().nodeValue += data + buffer.matchUntil("\u0000|[}&]");
+			tokenizer._currentAttribute().nodeValue += data + buffer.matchUntil("\u0000|[{}&]");
 		}
 		return true;
 	}
@@ -4423,12 +4431,14 @@ function TreeBuilder() {
 		br: 'startTagVoidFormatting',
 		embed: 'startTagVoidFormatting',
 		img: 'startTagVoidFormatting',
+		checkboxinput: 'startTagVoidFormatting',
 		densityplot: 'startTagVoidFormatting',
 		feedbackbuttons: 'startTagVoidFormatting',
 		functionplot: 'startTagVoidFormatting',
-		rhelp: 'startTagVoidFormatting',
+		numberinput: 'startTagVoidFormatting',
 		rplot: 'startTagVoidFormatting',
 		rshell: 'startTagVoidFormatting',
+		sliderinput: 'startTagVoidFormatting',
 		tex: 'startTagVoidFormatting',
 		videoplayer: 'startTagVoidFormatting',
 		keygen: 'startTagVoidFormatting',
