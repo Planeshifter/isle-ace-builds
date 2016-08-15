@@ -2946,6 +2946,7 @@ Tokenizer.prototype.tokenize = function(source) {
 	function attribute_value_react_state(buffer) {
 		var data = buffer.char();
 		if (data === InputStream.EOF) {
+			tokenizer._parseError("eof-in-attribute-value-single-quote");
 			buffer.unget(data);
 			tokenizer.setState(data_state);
 		} else if (data === "}") {
@@ -2957,7 +2958,7 @@ Tokenizer.prototype.tokenize = function(source) {
 			tokenizer._parseError("invalid-codepoint");
 			tokenizer._currentAttribute().nodeValue += "\uFFFD";
 		} else {
-			tokenizer._currentAttribute().nodeValue += data + buffer.matchUntil("\u0000|['&]");
+			tokenizer._currentAttribute().nodeValue += data + buffer.matchUntil("\u0000|[}&]");
 		}
 		return true;
 	}
