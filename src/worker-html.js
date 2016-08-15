@@ -2149,6 +2149,8 @@ Tokenizer.prototype.tokenize = function(source) {
 
 	this._inputStream.eof = true;
 
+	this._noUnclosedBrackets = 0;
+
 	var tokenizer = this;
 
 	while (this._state.call(this, this._inputStream));
@@ -2943,21 +2945,17 @@ Tokenizer.prototype.tokenize = function(source) {
 		return true;
 	}
 
-	attribute_value_react_state.noUnclosedBrackets = 0;
-
 	function attribute_value_react_state(buffer) {
 		var data = buffer.char();
 		if (data === InputStream.EOF) {
-			tokenizer._parseError("eof-in-attribute-value-single-quote");
+			tokenizer._parseError("eof-in-attribute-value-react");
 			buffer.unget(data);
 			tokenizer.setState(data_state);
-		} else if (data === "{" ) {
-			attribute_value_react_state.noUnclosedBrackets += 1;
 		} else if (data === "}") {
-			if ( attribute_value_react_state.noUnclosedBrackets === 0 ) {
+			if ( this._noUnclosedBrackets === 0 ) {
 				tokenizer.setState(after_attribute_value_state);
 			} else {
-				attribute_value_react_state.noUnclosedBrackets -= 1;
+				this._noUnclosedBrackets -= 1;
 			}
 		} else if (data === '&') {
 			this._additionalAllowedCharacter = "}";
@@ -2966,7 +2964,11 @@ Tokenizer.prototype.tokenize = function(source) {
 			tokenizer._parseError("invalid-codepoint");
 			tokenizer._currentAttribute().nodeValue += "\uFFFD";
 		} else {
-			tokenizer._currentAttribute().nodeValue += data + buffer.matchUntil("\u0000|[{}&]");
+			if ( data === "{" ) {
+				this._noUnclosedBrackets += 1;
+			}
+			console.log( this._noUnclosedBrackets )
+			tokenizer._currentAttribute().nodeValue += data + buffer.matchUntil("\u0000|{|[}&]");
 		}
 		return true;
 	}
@@ -6744,6 +6746,8 @@ module.exports={
 		"Unexpected end of file in attribute value (\").",
 	"eof-in-attribute-value-single-quote":
 		"Unexpected end of file in attribute value (').",
+	"eof-in-attribute-value-react":
+		"Unexpected end of file in JSX attribute value.",
 	"eof-in-attribute-value-no-quotes":
 		"Unexpected end of file in attribute value.",
 	"eof-after-attribute-value":
