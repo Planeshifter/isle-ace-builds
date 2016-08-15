@@ -6,7 +6,7 @@ var lang = require("../lib/lang");
 var event = require("../lib/event");
 var searchboxCss = "\
 .ace_search {\
-background-color: #ddd;\
+background-color: lightblue;\
 border: 1px solid #cbcbcb;\
 border-top: 0 none;\
 max-width: 325px;\
@@ -338,7 +338,9 @@ var SearchBox = function(editor, range, showReplaceForm) {
             wholeWord: this.wholeWordOption.checked,
             preventScroll: preventScroll
         });
-        dom.setCssClass(this.searchBox, "ace_nomatch", !range && this.searchInput.value);
+        var noMatch = !range && this.searchInput.value;
+        dom.setCssClass(this.searchBox, "ace_nomatch", noMatch);
+        this.editor._emit("findSearchBox", { match: !noMatch });
         this.highlight();
     };
     this.findNext = function() {

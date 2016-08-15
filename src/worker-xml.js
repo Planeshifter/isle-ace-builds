@@ -291,7 +291,7 @@ exports.copyArray = function(array){
     var copy = [];
     for (var i=0, l=array.length; i<l; i++) {
         if (array[i] && typeof array[i] == "object")
-            copy[i] = this.copyObject(array[i]);
+            copy[i] = this.copyObject( array[i] );
         else 
             copy[i] = array[i];
     }
@@ -309,12 +309,14 @@ exports.deepCopy = function deepCopy(obj) {
         }
         return copy;
     }
-    if (Object.prototype.toString.call(obj) !== "[object Object]")
+    var cons = obj.constructor;
+    if (cons === RegExp)
         return obj;
     
-    copy = {};
-    for (var key in obj)
+    copy = cons();
+    for (var key in obj) {
         copy[key] = deepCopy(obj[key]);
+    }
     return copy;
 };
 
@@ -1101,7 +1103,7 @@ var Document = function(textOrLines) {
         return this.removeFullLines(firstRow, lastRow);
     };
     this.insertNewLine = function(position) {
-        console.warn("Use of document.insertNewLine is deprecated. Use insertMergedLines(position, ['', '']) instead.");
+        console.warn("Use of document.insertNewLine is deprecated. Use insertMergedLines(position, [\'\', \'\']) instead.");
         return this.insertMergedLines(position, ["", ""]);
     };
     this.insert = function(position, text) {

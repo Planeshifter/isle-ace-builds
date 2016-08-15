@@ -281,7 +281,7 @@ var XmlBehaviour = function () {
 
     this.add("autoclosing", "insertion", function (state, action, editor, session, text) {
         if (text == '>') {
-            var position = editor.getSelectionRange().start;
+            var position = editor.getCursorPosition();
             var iterator = new TokenIterator(session, position.row, position.column);
             var token = iterator.getCurrentToken() || iterator.stepBackward();
             if (!token || !(is(token, "tag-name") || is(token, "tag-whitespace") || is(token, "attribute-name") || is(token, "attribute-equals") || is(token, "attribute-value")))
@@ -299,10 +299,6 @@ var XmlBehaviour = function () {
             }
             while (!is(token, "tag-name")) {
                 token = iterator.stepBackward();
-                if (token.value == "<") {
-                    token = iterator.stepForward();
-                    break;
-                }
             }
 
             var tokenRow = iterator.getCurrentTokenRow();

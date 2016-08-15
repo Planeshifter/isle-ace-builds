@@ -243,7 +243,6 @@ var SnippetManager = function() {
         if (cursor.column < indentString.length)
             indentString = indentString.slice(0, cursor.column);
 
-        snippetText = snippetText.replace(/\r/g, "");
         var tokens = this.tokenizeTmSnippet(snippetText);
         tokens = this.resolveVariables(tokens, editor);
         tokens = tokens.map(function(x) {
@@ -321,10 +320,9 @@ var SnippetManager = function() {
         var text = "";
         tokens.forEach(function(t) {
             if (typeof t === "string") {
-                var lines = t.split("\n");
-                if (lines.length > 1){
-                    column = lines[lines.length - 1].length;
-                    row += lines.length - 1;
+                if (t[0] === "\n"){
+                    column = t.length - 1;
+                    row ++;
                 } else
                     column += t.length;
                 text += t;

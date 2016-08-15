@@ -11,7 +11,7 @@ class Greeter {
 var greeter = new Greeter("world");
 
 var button = document.createElement('button')
-button.innerText = <string>"Say Hello";
+button.innerText = "Say Hello"
 button.onclick = function() {
 	alert(greeter.greet())
 }

@@ -22,7 +22,6 @@ var themeData = [
     ["Chaos"                ,"chaos"                   ,  "dark"],
     ["Clouds Midnight"      ,"clouds_midnight"         ,  "dark"],
     ["Cobalt"               ,"cobalt"                  ,  "dark"],
-    ["Gruvbox"              ,"gruvbox"                 ,  "dark"],
     ["idle Fingers"         ,"idle_fingers"            ,  "dark"],
     ["krTheme"              ,"kr_theme"                ,  "dark"],
     ["Merbivore"            ,"merbivore"               ,  "dark"],

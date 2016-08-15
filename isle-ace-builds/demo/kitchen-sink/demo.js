@@ -1289,7 +1289,6 @@ var supportedModes = {
     Diff:        ["diff|patch"],
     Dockerfile:  ["^Dockerfile"],
     Dot:         ["dot"],
-    Drools:      ["drl"],
     Dummy:       ["dummy"],
     DummySyntax: ["dummy"],
     Eiffel:      ["e|ge"],
@@ -1297,20 +1296,18 @@ var supportedModes = {
     Elixir:      ["ex|exs"],
     Elm:         ["elm"],
     Erlang:      ["erl|hrl"],
-    Forth:       ["frt|fs|ldr|fth|4th"],
-    Fortran:     ["f|f90"],
+    Forth:       ["frt|fs|ldr"],
     FTL:         ["ftl"],
     Gcode:       ["gcode"],
     Gherkin:     ["feature"],
     Gitignore:   ["^.gitignore"],
     Glsl:        ["glsl|frag|vert"],
-    Gobstones:   ["gbs"],
+    Gobstones:   ["gbs"], 
     golang:      ["go"],
     Groovy:      ["groovy"],
     HAML:        ["haml"],
     Handlebars:  ["hbs|handlebars|tpl|mustache"],
     Haskell:     ["hs"],
-    Haskell_Cabal:     ["cabal"],
     haXe:        ["hx"],
     HTML:        ["html|htm|xhtml"],
     HTML_Elixir: ["eex|html.eex"],
@@ -1326,8 +1323,8 @@ var supportedModes = {
     JSP:         ["jsp"],
     JSX:         ["jsx"],
     Julia:       ["jl"],
-    Kotlin:      ["kt|kts"],
     LaTeX:       ["tex|latex|ltx|bib"],
+    Lean:        ["lean|hlean"],
     LESS:        ["less"],
     Liquid:      ["liquid"],
     Lisp:        ["lisp"],
@@ -1360,7 +1357,7 @@ var supportedModes = {
     Protobuf:    ["proto"],
     Python:      ["py"],
     R:           ["r"],
-    Razor:       ["cshtml|asp"],
+    Razor:       ["cshtml"],
     RDoc:        ["Rd"],
     RHTML:       ["Rhtml"],
     RST:         ["rst"],
@@ -1389,7 +1386,6 @@ var supportedModes = {
     Toml:        ["toml"],
     Twig:        ["twig|swig"],
     Typescript:  ["ts|typescript|str"],
-    TSX:         ["tsx"],
     Vala:        ["vala"],
     VBScript:    ["vbs|vb"],
     Velocity:    ["vm"],
@@ -1939,11 +1935,8 @@ function saveDoc(name, callback) {
 }
 
 function upload(url, data, callback) {
-    var absUrl = net.qualifyURL(url);
-    if (/^file:/.test(absUrl))
-        absUrl = "http://localhost:8888/" + url;
-    url = absUrl
-    if (!/^https?:/.test(url))
+    url = net.qualifyURL(url);
+    if (!/https?:/.test(url))
         return callback(new Error("Unsupported url scheme"));
     var xhr = new XMLHttpRequest();
     xhr.open("PUT", url, true);
@@ -1997,7 +1990,6 @@ var themeData = [
     ["Chaos"                ,"chaos"                   ,  "dark"],
     ["Clouds Midnight"      ,"clouds_midnight"         ,  "dark"],
     ["Cobalt"               ,"cobalt"                  ,  "dark"],
-    ["Gruvbox"              ,"gruvbox"                 ,  "dark"],
     ["idle Fingers"         ,"idle_fingers"            ,  "dark"],
     ["krTheme"              ,"kr_theme"                ,  "dark"],
     ["Merbivore"            ,"merbivore"               ,  "dark"],
@@ -3736,15 +3728,17 @@ define("ace/keyboard/vim",["require","exports","module","ace/range","ace/lib/eve
     return this.ace.inVirtualSelectionMode && this.ace.selection.index;
   };
   this.onChange = function(delta) {
-    var change = { text: delta.action[0] == 'i' ? delta.lines : [] };
-    var curOp = this.curOp = this.curOp || {};
-    if (!curOp.changeHandlers)
-      curOp.changeHandlers = this._eventRegistry["change"] && this._eventRegistry["change"].slice();
-    if (this.virtualSelectionMode()) return;
-    if (!curOp.lastChange) {
-      curOp.lastChange = curOp.change = change;
-    } else {
-      curOp.lastChange.next = curOp.lastChange = change;
+    if (delta.action[0] == 'i') {
+      var change = { text: delta.lines };
+      var curOp = this.curOp = this.curOp || {};
+      if (!curOp.changeHandlers)
+        curOp.changeHandlers = this._eventRegistry["change"] && this._eventRegistry["change"].slice();
+      if (this.virtualSelectionMode()) return;
+      if (!curOp.lastChange) {
+        curOp.lastChange = curOp.change = change;
+      } else {
+        curOp.lastChange.next = curOp.lastChange = change;
+      }
     }
     this.$updateMarkers(delta);
   };
@@ -4444,9 +4438,9 @@ dom.importCssString(".normal-mode .ace_cursor{\
     { keys: '<C-[>', type: 'keyToKey', toKeys: '<Esc>', context: 'insert' },
     { keys: '<C-c>', type: 'keyToKey', toKeys: '<Esc>', context: 'insert' },
     { keys: 's', type: 'keyToKey', toKeys: 'cl', context: 'normal' },
-    { keys: 's', type: 'keyToKey', toKeys: 'c', context: 'visual'},
+    { keys: 's', type: 'keyToKey', toKeys: 'xi', context: 'visual'},
     { keys: 'S', type: 'keyToKey', toKeys: 'cc', context: 'normal' },
-    { keys: 'S', type: 'keyToKey', toKeys: 'VdO', context: 'visual' },
+    { keys: 'S', type: 'keyToKey', toKeys: 'dcc', context: 'visual' },
     { keys: '<Home>', type: 'keyToKey', toKeys: '0' },
     { keys: '<End>', type: 'keyToKey', toKeys: '$' },
     { keys: '<PageUp>', type: 'keyToKey', toKeys: '<C-b>' },
@@ -4539,7 +4533,6 @@ dom.importCssString(".normal-mode .ace_cursor{\
     { keys: 'v', type: 'action', action: 'toggleVisualMode' },
     { keys: 'V', type: 'action', action: 'toggleVisualMode', actionArgs: { linewise: true }},
     { keys: '<C-v>', type: 'action', action: 'toggleVisualMode', actionArgs: { blockwise: true }},
-    { keys: '<C-q>', type: 'action', action: 'toggleVisualMode', actionArgs: { blockwise: true }},
     { keys: 'gv', type: 'action', action: 'reselectLastSelection' },
     { keys: 'J', type: 'action', action: 'joinLines', isEdit: true },
     { keys: 'p', type: 'action', action: 'paste', isEdit: true, actionArgs: { after: true, isEdit: true }},
@@ -4993,7 +4986,7 @@ dom.importCssString(".normal-mode .ace_cursor{\
         exCommandDispatcher.map(lhs, rhs, ctx);
       },
       unmap: function(lhs, ctx) {
-        exCommandDispatcher.unmap(lhs, ctx);
+        exCommandDispatcher.unmap(lhs, ctx || "normal");
       },
       setOption: setOption,
       getOption: getOption,
@@ -8103,6 +8096,7 @@ dom.importCssString(".normal-mode .ace_cursor{\
             }
           }
         }
+        throw Error('No such mapping.');
       }
     };
 
@@ -8713,10 +8707,6 @@ dom.importCssString(".normal-mode .ace_cursor{\
           if (changeObj.origin == '+input' || changeObj.origin == 'paste'
               || changeObj.origin === undefined /* only in testing */) {
             var text = changeObj.text.join('\n');
-            if (lastChange.maybeReset) {
-              lastChange.changes = [];
-              lastChange.maybeReset = false;
-            }
             lastChange.changes.push(text);
           }
           changeObj = changeObj.next;
@@ -8732,7 +8722,7 @@ dom.importCssString(".normal-mode .ace_cursor{\
         if (lastChange.expectCursorActivityForChange) {
           lastChange.expectCursorActivityForChange = false;
         } else {
-          lastChange.maybeReset = true;
+          lastChange.changes = [];
         }
       } else if (!cm.curOp.isVimOp) {
         handleExternalSelection(cm, vim);
@@ -8784,10 +8774,6 @@ dom.importCssString(".normal-mode .ace_cursor{\
       var keyName = CodeMirror.keyName(e);
       if (!keyName) { return; }
       function onKeyFound() {
-        if (lastChange.maybeReset) {
-          lastChange.changes = [];
-          lastChange.maybeReset = false;
-        }
         lastChange.changes.push(new InsertModeKey(keyName));
         return true;
       }
@@ -9498,7 +9484,6 @@ var SnippetManager = function() {
         if (cursor.column < indentString.length)
             indentString = indentString.slice(0, cursor.column);
 
-        snippetText = snippetText.replace(/\r/g, "");
         var tokens = this.tokenizeTmSnippet(snippetText);
         tokens = this.resolveVariables(tokens, editor);
         tokens = tokens.map(function(x) {
@@ -9576,10 +9561,9 @@ var SnippetManager = function() {
         var text = "";
         tokens.forEach(function(t) {
             if (typeof t === "string") {
-                var lines = t.split("\n");
-                if (lines.length > 1){
-                    column = lines[lines.length - 1].length;
-                    row += lines.length - 1;
+                if (t[0] === "\n"){
+                    column = t.length - 1;
+                    row ++;
                 } else
                     column += t.length;
                 text += t;
@@ -10699,15 +10683,12 @@ var AcePopup = function(parentNode) {
         var renderer = this.renderer;
         var maxH = renderer.$maxLines * lineHeight * 1.4;
         var top = pos.top + this.$borderSize;
-        var allowTopdown = top > screenHeight / 2 && !topdownOnly;
-        if (allowTopdown && top + lineHeight + maxH > screenHeight) {
-            renderer.$maxPixelHeight = top - 2 * this.$borderSize;
+        if (top + maxH > screenHeight - lineHeight && !topdownOnly) {
             el.style.top = "";
             el.style.bottom = screenHeight - top + "px";
             popup.isTopdown = false;
         } else {
             top += lineHeight;
-            renderer.$maxPixelHeight = screenHeight - top - 0.2 * lineHeight;
             el.style.top = top + "px";
             el.style.bottom = "";
             popup.isTopdown = true;
@@ -11833,7 +11814,7 @@ exports.commands = [{
 
 });
 
-define("kitchen-sink/demo",["require","exports","module","ace/lib/fixoldbrowsers","ace/multi_select","ace/ext/spellcheck","kitchen-sink/inline_editor","kitchen-sink/dev_util","kitchen-sink/file_drop","ace/config","ace/lib/dom","ace/lib/net","ace/lib/lang","ace/lib/useragent","ace/lib/event","ace/theme/textmate","ace/edit_session","ace/undomanager","ace/keyboard/hash_handler","ace/virtual_renderer","ace/editor","ace/ext/whitespace","kitchen-sink/doclist","ace/ext/modelist","ace/ext/themelist","kitchen-sink/layout","kitchen-sink/token_tooltip","kitchen-sink/util","ace/ext/elastic_tabstops_lite","ace/incremental_search","ace/worker/worker_client","ace/split","ace/keyboard/vim","ace/ext/statusbar","ace/ext/emmet","ace/snippets","ace/ext/language_tools","ace/ext/beautify","ace/keyboard/keybinding","ace/commands/command_manager"], function(require, exports, module) {
+define("kitchen-sink/demo",["require","exports","module","ace/lib/fixoldbrowsers","ace/multi_select","ace/ext/spellcheck","kitchen-sink/inline_editor","kitchen-sink/dev_util","kitchen-sink/file_drop","ace/config","ace/lib/dom","ace/lib/net","ace/lib/lang","ace/lib/useragent","ace/lib/event","ace/theme/textmate","ace/edit_session","ace/undomanager","ace/keyboard/hash_handler","ace/virtual_renderer","ace/editor","ace/ext/whitespace","kitchen-sink/doclist","ace/ext/modelist","ace/ext/themelist","kitchen-sink/layout","kitchen-sink/token_tooltip","kitchen-sink/util","ace/ext/elastic_tabstops_lite","ace/incremental_search","ace/worker/worker_client","ace/split","ace/keyboard/vim","ace/ext/statusbar","ace/ext/emmet","ace/snippets","ace/ext/language_tools","ace/ext/beautify"], function(require, exports, module) {
 "use strict";
 
 require("ace/lib/fixoldbrowsers");
@@ -12367,51 +12348,5 @@ env.editor.setOptions({
 
 var beautify = require("ace/ext/beautify");
 env.editor.commands.addCommands(beautify.commands);
-
-var KeyBinding = require("ace/keyboard/keybinding").KeyBinding;
-var CommandManager = require("ace/commands/command_manager").CommandManager;
-var commandManager = new CommandManager();
-var kb = new KeyBinding({
-    commands: commandManager,
-    fake: true
-});
-event.addCommandKeyListener(document.documentElement, kb.onCommandKey.bind(kb));
-event.addListener(document.documentElement, "keyup", function(e) {
-    if (e.keyCode === 18) // do not trigger browser menu on windows
-        e.preventDefault();
-});
-commandManager.addCommands([{
-    name: "window-left",
-    bindKey: {win: "cmd-alt-left", mac: "ctrl-cmd-left"},
-    exec: function() {
-        moveFocus("left");
-    }
-}, {
-    name: "window-right",
-    bindKey: {win: "cmd-alt-right", mac: "ctrl-cmd-right"},
-    exec: function() {
-        moveFocus("right");
-    }
-}, {
-    name: "window-up",
-    bindKey: {win: "cmd-alt-up", mac: "ctrl-cmd-up"},
-    exec: function() {
-        moveFocus("up");
-    }
-}, {
-    name: "window-down",
-    bindKey: {win: "cmd-alt-down", mac: "ctrl-cmd-down"},
-    exec: function() {
-        moveFocus("down");
-    }
-}]);
-
-function moveFocus() {
-    var el = document.activeElement;
-    if (el == env.editor.textInput.getElement())
-        env.editor.cmdLine.focus();    
-    else
-        env.editor.focus();
-}
 
 });
