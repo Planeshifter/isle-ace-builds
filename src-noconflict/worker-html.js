@@ -3002,6 +3002,8 @@ Tokenizer.prototype.tokenize = function(source) {
 			tokenizer.setState(attribute_value_double_quoted_state);
 		else if (this._additionalAllowedCharacter === '\'')
 			tokenizer.setState(attribute_value_single_quoted_state);
+		else if (this._additionalAllowedCharacter === '}')
+			tokenizer.setState(attribute_value_react_state);
 		else if (this._additionalAllowedCharacter === '>')
 			tokenizer.setState(attribute_value_unquoted_state);
 		return true;
@@ -4421,6 +4423,10 @@ function TreeBuilder() {
 		br: 'startTagVoidFormatting',
 		embed: 'startTagVoidFormatting',
 		img: 'startTagVoidFormatting',
+		densityplot: 'startTagVoidFormatting',
+		functionplot: 'startTagVoidFormatting',
+		rhelp: 'startTagVoidFormatting',
+		rplot: 'startTagVoidFormatting',
 		rshell: 'startTagVoidFormatting',
 		keygen: 'startTagVoidFormatting',
 		wbr: 'startTagVoidFormatting',
