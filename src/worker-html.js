@@ -2881,6 +2881,8 @@ Tokenizer.prototype.tokenize = function(source) {
 			buffer.unget(data);
 		} else if (data === "'") {
 			tokenizer.setState(attribute_value_single_quoted_state);
+		} else if (data === "{") {
+			tokenizer.setState(attribute_value_react_state);
 		} else if (data === '>') {
 			tokenizer._parseError("expected-attribute-value-but-got-right-bracket");
 			tokenizer._emitCurrentToken();
@@ -2931,6 +2933,26 @@ Tokenizer.prototype.tokenize = function(source) {
 			tokenizer.setState(after_attribute_value_state);
 		} else if (data === '&') {
 			this._additionalAllowedCharacter = "'";
+			tokenizer.setState(character_reference_in_attribute_value_state);
+		} else if (data === '\u0000') {
+			tokenizer._parseError("invalid-codepoint");
+			tokenizer._currentAttribute().nodeValue += "\uFFFD";
+		} else {
+			tokenizer._currentAttribute().nodeValue += data + buffer.matchUntil("\u0000|['&]");
+		}
+		return true;
+	}
+
+	function attribute_value_react_state(buffer) {
+		var data = buffer.char();
+		if (data === InputStream.EOF) {
+			tokenizer._parseError("eof-in-attribute-value-single-quote");
+			buffer.unget(data);
+			tokenizer.setState(data_state);
+		} else if (data === "}") {
+			tokenizer.setState(after_attribute_value_state);
+		} else if (data === '&') {
+			this._additionalAllowedCharacter = "}";
 			tokenizer.setState(character_reference_in_attribute_value_state);
 		} else if (data === '\u0000') {
 			tokenizer._parseError("invalid-codepoint");
@@ -4399,6 +4421,7 @@ function TreeBuilder() {
 		br: 'startTagVoidFormatting',
 		embed: 'startTagVoidFormatting',
 		img: 'startTagVoidFormatting',
+		rshell: 'startTagVoidFormatting',
 		keygen: 'startTagVoidFormatting',
 		wbr: 'startTagVoidFormatting',
 		param: 'startTagParamSourceTrack',
@@ -6878,7 +6901,7 @@ module.exports={
 		"Unexpected end tag ({name}). Expected end of file.",
 	"unexpected-end-table-in-caption":
 		"Unexpected end table tag in caption. Generates implied end caption.",
-	"end-html-in-innerhtml": 
+	"end-html-in-innerhtml":
 		"Unexpected html end tag in inner html mode.",
 	"eof-in-table":
 		"Unexpected end of file. Expected table content.",
