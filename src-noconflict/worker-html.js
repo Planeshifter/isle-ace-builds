@@ -2946,7 +2946,6 @@ Tokenizer.prototype.tokenize = function(source) {
 	function attribute_value_react_state(buffer) {
 		var data = buffer.char();
 		if (data === InputStream.EOF) {
-			tokenizer._parseError("eof-in-attribute-value-single-quote");
 			buffer.unget(data);
 			tokenizer.setState(data_state);
 		} else if (data === "}") {
@@ -4424,10 +4423,13 @@ function TreeBuilder() {
 		embed: 'startTagVoidFormatting',
 		img: 'startTagVoidFormatting',
 		densityplot: 'startTagVoidFormatting',
+		feedbackbuttons: 'startTagVoidFormatting',
 		functionplot: 'startTagVoidFormatting',
 		rhelp: 'startTagVoidFormatting',
 		rplot: 'startTagVoidFormatting',
 		rshell: 'startTagVoidFormatting',
+		tex: 'startTagVoidFormatting',
+		videoplayer: 'startTagVoidFormatting',
 		keygen: 'startTagVoidFormatting',
 		wbr: 'startTagVoidFormatting',
 		param: 'startTagParamSourceTrack',
