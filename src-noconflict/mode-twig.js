@@ -1890,7 +1890,11 @@ var HtmlHighlightRules = function() {
         tag_stuff: [
             {include : "attributes"},
             {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : "start"}
-        ]
+        ],
+        preamble: [{
+            token: "meta.preamble",
+            regex: "---[^-]*---"
+        }]
     });
 
     this.embedTagRules(CssHighlightRules, "css-", "style");
