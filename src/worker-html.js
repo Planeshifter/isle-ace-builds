@@ -4445,6 +4445,7 @@ function TreeBuilder() {
 		rplot: 'startTagVoidFormatting',
 		rshell: 'startTagVoidFormatting',
 		rtable: 'startTagVoidFormatting',
+		selectinput: 'startTagVoidFormatting',
 		sliderinput: 'startTagVoidFormatting',
 		tex: 'startTagVoidFormatting',
 		victoryanimation: 'startTagVoidFormatting',
