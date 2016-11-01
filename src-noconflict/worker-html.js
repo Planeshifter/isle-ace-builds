@@ -4452,7 +4452,6 @@ function TreeBuilder() {
 		victoryaxis: 'startTagVoidFormatting',
 		victorybar: 'startTagVoidFormatting',
 		victorycandlestick: 'startTagVoidFormatting',
-		victorychart: 'startTagVoidFormatting',
 		victoryerrorbar: 'startTagVoidFormatting',
 		victorygroup: 'startTagVoidFormatting',
 		victorylabel: 'startTagVoidFormatting',

@@ -3161,7 +3161,7 @@ var XmlBehaviour = require("./behaviour/xml").XmlBehaviour;
 var HtmlFoldMode = require("./folding/html").FoldMode;
 var HtmlCompletions = require("./html_completions").HtmlCompletions;
 var WorkerClient = require("../worker/worker_client").WorkerClient;
-var voidElements = ["area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "menuitem", "param", "source", "track", "wbr"];
+var voidElements = ["area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "menuitem", "param", "source", "track", "wbr", "selectinput" ];
 var optionalEndTags = ["li", "dt", "dd", "p", "rt", "rp", "optgroup", "option", "colgroup", "td", "th"];
 
 var Mode = function(options) {
@@ -3194,7 +3194,7 @@ oop.inherits(Mode, TextMode);
     };
 
     this.getCompletions = function(state, session, pos, prefix) {
-        return this.$completer.getCompletions(state, session, pos, prefix);
+        return this.$completer.getCompletions(state, session, pos, prefix); q
     };
 
     this.createWorker = function(session) {
