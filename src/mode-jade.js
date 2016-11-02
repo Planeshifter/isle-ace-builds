@@ -559,12 +559,12 @@ var XmlHighlightRules = function(normalize) {
             include: "string"
         }, {
             token : "punctuation.xml-decl.xml",
-            regex : "\\?>",
+            regex : "[^=]\\?>",
             next : "start"
         }],
 
         processing_instruction : [
-            {token : "punctuation.instruction.xml", regex : "\\?>", next : "start"},
+            {token : "punctuation.instruction.xml", regex : "[^=]\\?>", next : "start"},
             {defaultToken : "instruction.xml"}
         ],
 
@@ -624,7 +624,7 @@ var XmlHighlightRules = function(normalize) {
             regex : "(?:(<)|(</))((?:" + tagRegex + ":)?" + tagRegex + ")",
             next: [
                 {include : "attributes"},
-                {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : "start"}
+                {token : "meta.tag.punctuation.tag-close.xml", regex : "[^=]/?>", next : "start"}
             ]
         }],
 
@@ -691,16 +691,16 @@ var XmlHighlightRules = function(normalize) {
     this.embedTagRules = function(HighlightRules, prefix, tag){
         this.$rules.tag.unshift({
             token : ["meta.tag.punctuation.tag-open.xml", "meta.tag." + tag + ".tag-name.xml"],
-            regex : "(<)(" + tag + "(?=\\s|>|$))",
+            regex : "(<)(" + tag + "(?=\\s|[^=]>|$))",
             next: [
                 {include : "attributes"},
-                {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : prefix + "start"}
+                {token : "meta.tag.punctuation.tag-close.xml", regex : "[^=]/?>", next : prefix + "start"}
             ]
         });
 
         this.$rules[tag + "-end"] = [
             {include : "attributes"},
-            {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>",  next: "start",
+            {token : "meta.tag.punctuation.tag-close.xml", regex : "[^=]/?>",  next: "start",
                 onMatch : function(value, currentState, stack) {
                     stack.splice(0);
                     return this.token;
@@ -709,7 +709,7 @@ var XmlHighlightRules = function(normalize) {
 
         this.embedRules(HighlightRules, prefix, [{
             token: ["meta.tag.punctuation.end-tag-open.xml", "meta.tag." + tag + ".tag-name.xml"],
-            regex : "(</)(" + tag + "(?=\\s|>|$))",
+            regex : "(</)(" + tag + "(?=\\s|[^=]>|$))",
             next: tag + "-end"
         }, {
             token: "string.cdata.xml",
