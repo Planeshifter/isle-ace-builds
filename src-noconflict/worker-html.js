@@ -2165,6 +2165,8 @@ Tokenizer.prototype.tokenize = function(source) {
 			tokenizer.setState(character_reference_in_data_state);
 		} else if (data === '<') {
 			tokenizer.setState(tag_open_state);
+		} else if (data === '-' ) {
+			tokenizer.setState(markup_declaration_open_state);
 		} else if (data === '\u0000') {
 			tokenizer._emitToken({type: 'Characters', data: data});
 			buffer.commit();
@@ -3199,6 +3201,9 @@ Tokenizer.prototype.tokenize = function(source) {
 			buffer.unget(data);
 			tokenizer.setState(data_state);
 		} else if (data === '>') {
+			tokenizer._emitToken(tokenizer._currentToken);
+			tokenizer.setState(data_state); 
+		} else if (data === '-') {
 			tokenizer._emitToken(tokenizer._currentToken);
 			tokenizer.setState(data_state);
 		} else if (data === '!') {
@@ -4434,6 +4439,7 @@ function TreeBuilder() {
 		embed: 'startTagVoidFormatting',
 		img: 'startTagVoidFormatting',
 		checkboxinput: 'startTagVoidFormatting',
+		colorpicker: 'startTagVoidFormatting',
 		densityplot: 'startTagVoidFormatting',
 		draggablelist: 'startTagVoidFormatting',
 		feedbackbuttons: 'startTagVoidFormatting',
@@ -4448,6 +4454,8 @@ function TreeBuilder() {
 		selectinput: 'startTagVoidFormatting',
 		sliderinput: 'startTagVoidFormatting',
 		tex: 'startTagVoidFormatting',
+		textinput: 'startTagVoidFormatting',
+		timer: 'startTagVoidFormatting',
 		victoryanimation: 'startTagVoidFormatting',
 		victoryarea: 'startTagVoidFormatting',
 		victoryaxis: 'startTagVoidFormatting',
