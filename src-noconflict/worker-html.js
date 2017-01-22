@@ -5040,9 +5040,11 @@ function TreeBuilder() {
 		colgroup: 'startTagTableElement',
 		tbody: 'startTagTableElement',
 		td: 'startTagTableElement',
+		tableitem: 'startTagTableElement',
 		tfoot: 'startTagTableElement',
 		thead: 'startTagTableElement',
 		tr: 'startTagTableElement',
+		tablerow: 'startTagTableElement',
 		'-default': 'startTagOther'
 	};
 
@@ -5055,9 +5057,11 @@ function TreeBuilder() {
 		html: 'endTagIgnore',
 		tbody: 'endTagIgnore',
 		td: 'endTagIgnore',
+		tableitem: 'endTagIgnore',
 		tfood: 'endTagIgnore',
 		thead: 'endTagIgnore',
 		tr: 'endTagIgnore',
+		tablerow: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -5118,8 +5122,10 @@ function TreeBuilder() {
 		colgroup: 'startTagTableOther',
 		tbody: 'startTagTableOther',
 		td: 'startTagTableOther',
+		tableitem: 'startTagTableOther',
 		tfoot: 'startTagTableOther',
 		th: 'startTagTableOther',
+		tableheaderitem: 'startTagTableOther',
 		thead: 'startTagTableOther',
 		tr: 'startTagTableOther',
 		'-default': 'startTagOther'
@@ -5128,6 +5134,8 @@ function TreeBuilder() {
 	modes.inCell.end_tag_handlers = {
 		td: 'endTagTableCell',
 		th: 'endTagTableCell',
+		tableheaderitem: 'endTagTableCell',
+		tableitem: 'endTagTableCell',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
 		col: 'endTagIgnore',
@@ -5138,6 +5146,7 @@ function TreeBuilder() {
 		tfoot: 'endTagImply',
 		thead: 'endTagImply',
 		tr: 'endTagImply',
+		tablerow: 'endTagImply',
 		'-default': 'endTagOther'
 	};
 
