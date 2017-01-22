@@ -5654,7 +5654,7 @@ function TreeBuilder() {
 		tr: 'startTagTr',
 		td: 'startTagTableCell',
 		th: 'startTagTableCell',
-		TableRow: 'startTagTableCell',
+		TableRow: 'startTagTr',
 		TableHeaderItem: 'startTagTableCell',
 		TableItem: 'startTagTableCell',
 		caption: 'startTagTableOther',
