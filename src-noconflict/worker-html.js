@@ -4494,10 +4494,13 @@ function TreeBuilder() {
 		frameset: 'startTagFrameset',
 		tbody: 'startTagMisplaced',
 		td: 'startTagMisplaced',
+		tableitem: 'startTagMisplaced',
 		tfoot: 'startTagMisplaced',
 		th: 'startTagMisplaced',
+		tableheaderitem: 'startTagMisplaced',
 		thead: 'startTagMisplaced',
 		tr: 'startTagMisplaced',
+		tablerow: 'startTagMisplaced',
 		option: 'startTagOptionOptgroup',
 		optgroup: 'startTagOptionOptgroup',
 		math: 'startTagMath',
@@ -6518,9 +6521,10 @@ TreeBuilder.prototype.resetInsertionMode = function() {
 		if (node.namespaceURI === "http://www.w3.org/1999/xhtml") {
 			if (node.localName === 'select')
 				return this.setInsertionMode('inSelect');
-			if (node.localName === 'td' || node.localName === 'th')
+			if (node.localName === 'td' || node.localName === 'th' || 
+				node.localName === 'tableitem' || node.localName === 'tableheaderitem' )
 				return this.setInsertionMode('inCell');
-			if (node.localName === 'tr')
+			if (node.localName === 'tr' || node.localName === 'tablerow')
 				return this.setInsertionMode('inRow');
 			if (node.localName === 'tbody' || node.localName === 'thead' || node.localName === 'tfoot')
 				return this.setInsertionMode('inTableBody');
