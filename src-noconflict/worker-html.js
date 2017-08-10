@@ -1912,7 +1912,6 @@ var SpecialElements = {
 		'button',
 		'caption',
 		'center',
-		'col',
 		'colgroup',
 		'dd',
 		'details',
@@ -4440,6 +4439,8 @@ function TreeBuilder() {
 		img: 'startTagVoidFormatting',
 		checkboxinput: 'startTagVoidFormatting',
 		colorpicker: 'startTagVoidFormatting',
+		dataexplorer: 'startTagVoidFormatting',
+		datatable: 'startTagVoidFormatting',
 		densityplot: 'startTagVoidFormatting',
 		draggablelist: 'startTagVoidFormatting',
 		feedbackbuttons: 'startTagVoidFormatting',
@@ -4456,6 +4457,7 @@ function TreeBuilder() {
 		routput: 'startTagVoidFormatting',
 		selectinput: 'startTagVoidFormatting',
 		sliderinput: 'startTagVoidFormatting',
+		surveygenerator: 'startTagVoidFormatting',
 		tex: 'startTagVoidFormatting',
 		textinput: 'startTagVoidFormatting',
 		timer: 'startTagVoidFormatting',
@@ -4488,7 +4490,6 @@ function TreeBuilder() {
 		h5: 'startTagHeading',
 		h6: 'startTagHeading',
 		caption: 'startTagMisplaced',
-		col: 'startTagMisplaced',
 		colgroup: 'startTagMisplaced',
 		frame: 'startTagMisplaced',
 		frameset: 'startTagFrameset',
@@ -5036,7 +5037,6 @@ function TreeBuilder() {
 	modes.inCaption.start_tag_handlers = {
 		html: 'startTagHtml',
 		caption: 'startTagTableElement',
-		col: 'startTagTableElement',
 		colgroup: 'startTagTableElement',
 		tbody: 'startTagTableElement',
 		td: 'startTagTableElement',
@@ -5052,7 +5052,6 @@ function TreeBuilder() {
 		caption: 'endTagCaption',
 		table: 'endTagTable',
 		body: 'endTagIgnore',
-		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		tbody: 'endTagIgnore',
@@ -5118,7 +5117,6 @@ function TreeBuilder() {
 	modes.inCell.start_tag_handlers = {
 		html: 'startTagHtml',
 		caption: 'startTagTableOther',
-		col: 'startTagTableOther',
 		colgroup: 'startTagTableOther',
 		tbody: 'startTagTableOther',
 		td: 'startTagTableOther',
@@ -5138,7 +5136,6 @@ function TreeBuilder() {
 		tableitem: 'endTagTableCell',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
-		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		table: 'endTagImply',
@@ -5213,13 +5210,11 @@ function TreeBuilder() {
 
 	modes.inColumnGroup.start_tag_handlers = {
 		html: 'startTagHtml',
-		col: 'startTagCol',
 		'-default': 'startTagOther'
 	};
 
 	modes.inColumnGroup.end_tag_handlers = {
 		colgroup: 'endTagColgroup',
-		col: 'endTagCol',
 		'-default': 'endTagOther'
 	};
 
@@ -5461,7 +5456,6 @@ function TreeBuilder() {
 		html: 'startTagHtml',
 		caption: 'startTagCaption',
 		colgroup: 'startTagColgroup',
-		col: 'startTagCol',
 		table: 'startTagTable',
 		tbody: 'startTagRowGroup',
 		tfoot: 'startTagRowGroup',
@@ -5483,7 +5477,6 @@ function TreeBuilder() {
 		table: 'endTagTable',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
-		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		tbody: 'endTagIgnore',
@@ -5670,7 +5663,6 @@ function TreeBuilder() {
 		tableheaderitem: 'startTagTableCell',
 		tableitem: 'startTagTableCell',
 		caption: 'startTagTableOther',
-		col: 'startTagTableOther',
 		colgroup: 'startTagTableOther',
 		tbody: 'startTagTableOther',
 		tfoot: 'startTagTableOther',
@@ -5685,7 +5677,6 @@ function TreeBuilder() {
 		thead: 'endTagTableRowGroup',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
-		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		td: 'endTagIgnore',
@@ -5940,7 +5931,6 @@ function TreeBuilder() {
 		tableheaderitem: 'startTagTableCell',
 		tableitem: 'startTagTableCell',
 		caption: 'startTagTableOther',
-		col: 'startTagTableOther',
 		colgroup: 'startTagTableOther',
 		tbody: 'startTagTableOther',
 		tfoot: 'startTagTableOther',
@@ -5959,7 +5949,6 @@ function TreeBuilder() {
 		thead: 'endTagTableRowGroup',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
-		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		td: 'endTagIgnore',
