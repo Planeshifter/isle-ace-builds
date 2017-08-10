@@ -3763,10 +3763,10 @@ function TreeBuilder() {
 		processEOF: function() {
 			tree.generateImpliedEndTags();
 			if (tree.openElements.length > 2) {
-				tree.parseError('expected-closing-tag-but-got-eof');
+				// tree.parseError('expected-closing-tag-but-got-eof');
 			} else if (tree.openElements.length == 2 &&
 				tree.openElements.item(1).localName != 'body') {
-				tree.parseError('expected-closing-tag-but-got-eof');
+				// tree.parseError('expected-closing-tag-but-got-eof');
 			} else if (tree.context && tree.openElements.length > 1) {
 			}
 		},
