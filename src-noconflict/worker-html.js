@@ -2115,7 +2115,7 @@ Tokenizer.prototype._emitToken = function(token) {
 	}
 	this._tokenHandler.processToken(token);
 	if (token.type === 'StartTag' && token.selfClosing && !this._tokenHandler.isSelfClosingFlagAcknowledged()) {
-		this._parseError('non-void-element-with-trailing-solidus', {name: token.name});
+		// this._parseError('non-void-element-with-trailing-solidus', {name: token.name});
 	}
 };
 
@@ -4461,6 +4461,7 @@ function TreeBuilder() {
 		tex: 'startTagVoidFormatting',
 		textinput: 'startTagVoidFormatting',
 		timer: 'startTagVoidFormatting',
+		venndiagrambuilder: 'startTagVoidFormatting',
 		victoryanimation: 'startTagVoidFormatting',
 		victoryarea: 'startTagVoidFormatting',
 		victoryaxis: 'startTagVoidFormatting',
