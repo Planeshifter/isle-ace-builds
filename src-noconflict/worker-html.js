@@ -4494,10 +4494,13 @@ function TreeBuilder() {
 		frameset: 'startTagFrameset',
 		tbody: 'startTagMisplaced',
 		td: 'startTagMisplaced',
+		tableitem: 'startTagMisplaced',
 		tfoot: 'startTagMisplaced',
 		th: 'startTagMisplaced',
+		tableheaderitem: 'startTagMisplaced',
 		thead: 'startTagMisplaced',
 		tr: 'startTagMisplaced',
+		tablerow: 'startTagMisplaced',
 		option: 'startTagOptionOptgroup',
 		optgroup: 'startTagOptionOptgroup',
 		math: 'startTagMath',
@@ -4786,7 +4789,6 @@ function TreeBuilder() {
 	};
 
 	modes.inBody.startTagImage = function(name, attributes) {
-		tree.parseError('unexpected-start-tag-treated-as', {originalName: 'image', newName: 'img'});
 		this.processStartTag('img', attributes);
 	};
 
@@ -5038,9 +5040,11 @@ function TreeBuilder() {
 		colgroup: 'startTagTableElement',
 		tbody: 'startTagTableElement',
 		td: 'startTagTableElement',
+		tableitem: 'startTagTableElement',
 		tfoot: 'startTagTableElement',
 		thead: 'startTagTableElement',
 		tr: 'startTagTableElement',
+		tablerow: 'startTagTableElement',
 		'-default': 'startTagOther'
 	};
 
@@ -5053,9 +5057,11 @@ function TreeBuilder() {
 		html: 'endTagIgnore',
 		tbody: 'endTagIgnore',
 		td: 'endTagIgnore',
+		tableitem: 'endTagIgnore',
 		tfood: 'endTagIgnore',
 		thead: 'endTagIgnore',
 		tr: 'endTagIgnore',
+		tablerow: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -5116,8 +5122,10 @@ function TreeBuilder() {
 		colgroup: 'startTagTableOther',
 		tbody: 'startTagTableOther',
 		td: 'startTagTableOther',
+		tableitem: 'startTagTableOther',
 		tfoot: 'startTagTableOther',
 		th: 'startTagTableOther',
+		tableheaderitem: 'startTagTableOther',
 		thead: 'startTagTableOther',
 		tr: 'startTagTableOther',
 		'-default': 'startTagOther'
@@ -5126,6 +5134,8 @@ function TreeBuilder() {
 	modes.inCell.end_tag_handlers = {
 		td: 'endTagTableCell',
 		th: 'endTagTableCell',
+		tableheaderitem: 'endTagTableCell',
+		tableitem: 'endTagTableCell',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
 		col: 'endTagIgnore',
@@ -5136,6 +5146,7 @@ function TreeBuilder() {
 		tfoot: 'endTagImply',
 		thead: 'endTagImply',
 		tr: 'endTagImply',
+		tablerow: 'endTagImply',
 		'-default': 'endTagOther'
 	};
 
@@ -5458,6 +5469,9 @@ function TreeBuilder() {
 		td: 'startTagImplyTbody',
 		th: 'startTagImplyTbody',
 		tr: 'startTagImplyTbody',
+		tablerow: 'startTagImplyTbody',
+		tableheaderitem: 'startTagImplyTbody',
+		tableitem: 'startTagImplyTbody',
 		style: 'startTagStyleScript',
 		script: 'startTagStyleScript',
 		input: 'startTagInput',
@@ -5478,6 +5492,9 @@ function TreeBuilder() {
 		th: 'endTagIgnore',
 		thead: 'endTagIgnore',
 		tr: 'endTagIgnore',
+		tablerow: 'endTagIgnore',
+		tableheaderitem: 'endTagIgnore',
+		tableitem: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -5649,6 +5666,9 @@ function TreeBuilder() {
 		tr: 'startTagTr',
 		td: 'startTagTableCell',
 		th: 'startTagTableCell',
+		tablerow: 'startTagTr',
+		tableheaderitem: 'startTagTableCell',
+		tableitem: 'startTagTableCell',
 		caption: 'startTagTableOther',
 		col: 'startTagTableOther',
 		colgroup: 'startTagTableOther',
@@ -5671,6 +5691,9 @@ function TreeBuilder() {
 		td: 'endTagIgnore',
 		th: 'endTagIgnore',
 		tr: 'endTagIgnore',
+		tablerow: 'endTagIgnore',
+		tableheaderitem: 'endTagIgnore',
+		tableitem: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -5758,6 +5781,9 @@ function TreeBuilder() {
 		tr: 'endTagTableElements',
 		td: 'endTagTableElements',
 		th: 'endTagTableElements',
+		tablerow: 'endTagTableElements',
+		tableheaderitem: 'endTagTableElements',
+		tableitem: 'endTagTableElements',
 		'-default': 'endTagOther'
 	};
 
@@ -5858,6 +5884,9 @@ function TreeBuilder() {
 		tr: 'startTagTable',
 		td: 'startTagTable',
 		th: 'startTagTable',
+		tablerow: 'startTagTable',
+		tableheaderitem: 'startTagTable',
+		tableitem: 'startTagTable',
 		'-default': 'startTagOther'
 	};
 
@@ -5870,6 +5899,9 @@ function TreeBuilder() {
 		tr: 'endTagTable',
 		td: 'endTagTable',
 		th: 'endTagTable',
+		tablerow: 'endTagTable',
+		tableheaderitem: 'endTagTable',
+		tableitem: 'endTagTable',
 		'-default': 'endTagOther'
 	};
 
@@ -5905,6 +5937,8 @@ function TreeBuilder() {
 		html: 'startTagHtml',
 		td: 'startTagTableCell',
 		th: 'startTagTableCell',
+		tableheaderitem: 'startTagTableCell',
+		tableitem: 'startTagTableCell',
 		caption: 'startTagTableOther',
 		col: 'startTagTableOther',
 		colgroup: 'startTagTableOther',
@@ -5912,11 +5946,13 @@ function TreeBuilder() {
 		tfoot: 'startTagTableOther',
 		thead: 'startTagTableOther',
 		tr: 'startTagTableOther',
+		tablerow: 'startTagTableOther',
 		'-default': 'startTagOther'
 	};
 
 	modes.inRow.end_tag_handlers = {
 		tr: 'endTagTr',
+		tablerow: 'endTagTr',
 		table: 'endTagTable',
 		tbody: 'endTagTableRowGroup',
 		tfoot: 'endTagTableRowGroup',
@@ -5928,6 +5964,8 @@ function TreeBuilder() {
 		html: 'endTagIgnore',
 		td: 'endTagIgnore',
 		th: 'endTagIgnore',
+		tableheaderitem: 'endTagIgnore',
+		tableitem: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -6492,9 +6530,10 @@ TreeBuilder.prototype.resetInsertionMode = function() {
 		if (node.namespaceURI === "http://www.w3.org/1999/xhtml") {
 			if (node.localName === 'select')
 				return this.setInsertionMode('inSelect');
-			if (node.localName === 'td' || node.localName === 'th')
+			if (node.localName === 'td' || node.localName === 'th' || 
+				node.localName === 'tableitem' || node.localName === 'tableheaderitem' )
 				return this.setInsertionMode('inCell');
-			if (node.localName === 'tr')
+			if (node.localName === 'tr' || node.localName === 'tablerow')
 				return this.setInsertionMode('inRow');
 			if (node.localName === 'tbody' || node.localName === 'thead' || node.localName === 'tfoot')
 				return this.setInsertionMode('inTableBody');
