@@ -120,6 +120,7 @@ var FoldMode = require("./folding/haskell_cabal").FoldMode;
 var Mode = function() {
     this.HighlightRules = CabalHighlightRules;
     this.foldingRules = new FoldMode();
+    this.$behaviour = this.$defaultBehaviour;
 };
 oop.inherits(Mode, TextMode);
 
@@ -131,3 +132,11 @@ oop.inherits(Mode, TextMode);
 
 exports.Mode = Mode;
 });
+                (function() {
+                    window.require(["ace/mode/haskell_cabal"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            

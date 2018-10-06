@@ -25,7 +25,7 @@ DocCommentHighlightRules.getTagRule = function(start) {
         token : "comment.doc.tag.storage.type",
         regex : "\\b(?:TODO|FIXME|XXX|HACK)\\b"
     };
-}
+};
 
 DocCommentHighlightRules.getStartRule = function(start) {
     return {
@@ -192,7 +192,7 @@ var PythonHighlightRules = function() {
     var keywords = (
         "and|as|assert|break|class|continue|def|del|elif|else|except|exec|" +
         "finally|for|from|global|if|import|in|is|lambda|not|or|pass|print|" +
-        "raise|return|try|while|with|yield"
+        "raise|return|try|while|with|yield|async|await"
     );
 
     var builtinConstants = (
@@ -207,11 +207,13 @@ var PythonHighlightRules = function() {
         "chr|frozenset|long|reload|vars|classmethod|getattr|map|repr|xrange|" +
         "cmp|globals|max|reversed|zip|compile|hasattr|memoryview|round|" +
         "__import__|complex|hash|min|set|apply|delattr|help|next|setattr|" +
-        "buffer|dict|hex|object|slice|coerce|dir|id|oct|sorted|intern"
+        "buffer|dict|hex|object|slice|coerce|dir|id|oct|sorted|intern|" +
+        "breakpoint"
     );
     var keywordMapper = this.createKeywordMapper({
         "invalid.deprecated": "debugger",
         "support.function": builtinFunctions,
+        "variable.language": "self|cls",
         "constant.language": builtinConstants,
         "keyword": keywords
     }, "identifier");
@@ -363,11 +365,15 @@ var JsonHighlightRules = function() {
                 token : "constant.language.boolean",
                 regex : "(?:true|false)\\b"
             }, {
-                token : "invalid.illegal", // single quoted strings are not allowed
+                token : "text", // single quoted strings are not allowed
                 regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
             }, {
-                token : "invalid.illegal", // comments are not allowed
+                token : "comment", // comments are not allowed, but who cares?
                 regex : "\\/\\/.*$"
+            }, {
+                token : "comment.start", // comments are not allowed, but who cares?
+                regex : "\\/\\*",
+                next  : "comment"
             }, {
                 token : "paren.lparen",
                 regex : "[[({]"
@@ -385,15 +391,19 @@ var JsonHighlightRules = function() {
                 regex : /\\(?:x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|["\\\/bfnrt])/
             }, {
                 token : "string",
-                regex : '[^"\\\\]+'
-            }, {
-                token : "string",
-                regex : '"',
+                regex : '"|$',
                 next  : "start"
             }, {
-                token : "string",
-                regex : "",
+                defaultToken : "string"
+            }
+        ],
+        "comment" : [
+            {
+                token : "comment.end", // comments are not allowed, but who cares?
+                regex : "\\*\\/",
                 next  : "start"
+            }, {
+                defaultToken: "comment"
             }
         ]
     };
@@ -411,7 +421,7 @@ ace.define("ace/mode/javascript_highlight_rules",["require","exports","module","
 var oop = require("../lib/oop");
 var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-var identifierRe = "[a-zA-Z\\$_\u00a1-\uffff][a-zA-Z\\d\\$_\u00a1-\uffff]*\\b";
+var identifierRe = "[a-zA-Z\\$_\u00a1-\uffff][a-zA-Z\\d\\$_\u00a1-\uffff]*";
 
 var JavaScriptHighlightRules = function(options) {
     var keywordMapper = this.createKeywordMapper({
@@ -427,9 +437,9 @@ var JavaScriptHighlightRules = function(options) {
             "JSON|Math|"                                                               + // Other
             "this|arguments|prototype|window|document"                                 , // Pseudo
         "keyword":
-            "const|yield|import|get|set|" +
+            "const|yield|import|get|set|async|await|" +
             "break|case|catch|continue|default|delete|do|else|finally|for|function|" +
-            "if|in|instanceof|new|return|switch|throw|try|typeof|let|var|while|with|debugger|" +
+            "if|in|of|instanceof|new|return|switch|throw|try|typeof|let|var|while|with|debugger|" +
             "__parent__|__count__|escape|unescape|with|__proto__|" +
             "class|enum|extends|super|export|implements|private|public|interface|package|protected|static",
         "storage.type":
@@ -463,11 +473,11 @@ var JavaScriptHighlightRules = function(options) {
                 regex : '"(?=.)',
                 next  : "qqstring"
             }, {
-                token : "constant.numeric", // hex
-                regex : /0(?:[xX][0-9a-fA-F]+|[bB][01]+)\b/
+                token : "constant.numeric", // hexadecimal, octal and binary
+                regex : /0(?:[xX][0-9a-fA-F]+|[oO][0-7]+|[bB][01]+)\b/
             }, {
-                token : "constant.numeric", // float
-                regex : /[+-]?\d[\d_]*(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b/
+                token : "constant.numeric", // decimal integers and floats
+                regex : /(?:\d\d*(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+\b)?/
             }, {
                 token : [
                     "storage.type", "punctuation.operator", "support.function",
@@ -518,6 +528,9 @@ var JavaScriptHighlightRules = function(options) {
                 next: "function_arguments"
             }, {
                 token : "keyword",
+                regex : "from(?=\\s*('|\"))"
+            }, {
+                token : "keyword",
                 regex : "(?:" + kwBeforeRe + ")\\b",
                 next : "start"
             }, {
@@ -534,8 +547,12 @@ var JavaScriptHighlightRules = function(options) {
                 regex : /[.](?![.])/,
                 next  : "property"
             }, {
+                token : "storage.type",
+                regex : /=>/,
+                next  : "start"
+            }, {
                 token : "keyword.operator",
-                regex : /--|\+\+|\.{3}|===|==|=|!=|!==|<+=?|>+=?|!|&&|\|\||\?\:|[!$%&*+\-~\/^]=?/,
+                regex : /--|\+\+|\.{3}|===|==|=|!=|!==|<+=?|>+=?|!|&&|\|\||\?:|[!$%&*+\-~\/^]=?/,
                 next  : "start"
             }, {
                 token : "punctuation.operator",
@@ -673,7 +690,7 @@ var JavaScriptHighlightRules = function(options) {
             }, {
                 token : "string",
                 regex : "\\\\$",
-                next  : "qqstring"
+                consumeLineEnd  : true
             }, {
                 token : "string",
                 regex : '"|$',
@@ -689,7 +706,7 @@ var JavaScriptHighlightRules = function(options) {
             }, {
                 token : "string",
                 regex : "\\\\$",
-                next  : "qstring"
+                consumeLineEnd  : true
             }, {
                 token : "string",
                 regex : "'|$",
@@ -699,8 +716,8 @@ var JavaScriptHighlightRules = function(options) {
             }
         ]
     };
-    
-    
+
+
     if (!options || !options.noES6) {
         this.$rules.no_regex.unshift({
             regex: "[{}]", onMatch: function(val, state, stack) {
@@ -735,14 +752,14 @@ var JavaScriptHighlightRules = function(options) {
                 defaultToken: "string.quasi"
             }]
         });
-        
-        if (!options || !options.noJSX)
+
+        if (!options || options.jsx != false)
             JSX.call(this);
     }
-    
+
     this.embedRules(DocCommentHighlightRules, "doc-",
         [ DocCommentHighlightRules.getEndRule("no_regex") ]);
-    
+
     this.normalizeRules();
 };
 
@@ -793,8 +810,8 @@ function JSX() {
         {defaultToken: "string"}
     ];
     this.$rules.jsxAttributes = [{
-        token : "meta.tag.punctuation.tag-close.xml", 
-        regex : "/?>", 
+        token : "meta.tag.punctuation.tag-close.xml",
+        regex : "/?>",
         onMatch : function(value, currentState, stack) {
             if (currentState == stack[0])
                 stack.shift();
@@ -809,7 +826,7 @@ function JSX() {
             return [{type: this.token, value: value}];
         },
         nextState: "jsx"
-    }, 
+    },
     jsxJsRule,
     comments("jsxAttributes"),
     {
@@ -1331,7 +1348,7 @@ var PgsqlHighlightRules = function() {
                 next : "comment"
             },{
                 token : "keyword.statementBegin",
-                regex : "^[a-zA-Z]+", // Could enumerate starting keywords but this allows things to work when new statements are added.
+                regex : "[a-zA-Z]+", // Could enumerate starting keywords but this allows things to work when new statements are added.
                 next : "statement"
             },{
                 token : "support.buildin", // psql directive
@@ -1397,31 +1414,28 @@ var PgsqlHighlightRules = function() {
 
         "comment" : [{
                 token : "comment", // closing comment
-                regex : ".*?\\*\\/",
+                regex : "\\*\\/",
                 next : "start"
             }, {
-                token : "comment", // comment spanning whole line
-                regex : ".+"
+                defaultToken : "comment"
             }
         ],
 
         "commentStatement" : [{
                 token : "comment", // closing comment
-                regex : ".*?\\*\\/",
+                regex : "\\*\\/",
                 next : "statement"
             }, {
-                token : "comment", // comment spanning whole line
-                regex : ".+"
+                defaultToken : "comment"
             }
         ],
 
         "commentDollarSql" : [{
                 token : "comment", // closing comment
-                regex : ".*?\\*\\/",
+                regex : "\\*\\/",
                 next : "dollarSql"
             }, {
-                token : "comment", // comment spanning whole line
-                regex : ".+"
+                defaultToken : "comment"
             }
         ],
 
@@ -1458,15 +1472,15 @@ oop.inherits(PgsqlHighlightRules, TextHighlightRules);
 exports.PgsqlHighlightRules = PgsqlHighlightRules;
 });
 
-ace.define("ace/mode/pgsql",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/pgsql_highlight_rules","ace/range"], function(require, exports, module) {
+ace.define("ace/mode/pgsql",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/pgsql_highlight_rules"], function(require, exports, module) {
 
 var oop = require("../lib/oop");
 var TextMode = require("../mode/text").Mode;
 var PgsqlHighlightRules = require("./pgsql_highlight_rules").PgsqlHighlightRules;
-var Range = require("../range").Range;
 
 var Mode = function() {
     this.HighlightRules = PgsqlHighlightRules;
+    this.$behaviour = this.$defaultBehaviour;
 };
 oop.inherits(Mode, TextMode);
 
@@ -1480,10 +1494,18 @@ oop.inherits(Mode, TextMode);
         } else {
             return this.$getIndent(line); // Keep whatever indent the previous line has
         }
-    }
+    };
 
     this.$id = "ace/mode/pgsql";
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
 });
+                (function() {
+                    ace.require(["ace/mode/pgsql"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            

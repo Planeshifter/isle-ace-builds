@@ -71,7 +71,7 @@ var PascalHighlightRules = function() {
                 next: 'pop' },
               { defaultToken: 'string.quoted.single.pascal' } ] },
           { token: 'keyword.operator',
-           regex: '[+\\-;,/*%]|:=|=' } ] }
+           regex: '[+\\-;,/*%]|:=|=' } ] };
     
     this.normalizeRules();
 };
@@ -179,6 +179,7 @@ var FoldMode = require("./folding/coffee").FoldMode;
 var Mode = function() {
     this.HighlightRules = PascalHighlightRules;
     this.foldingRules = new FoldMode();
+    this.$behaviour = this.$defaultBehaviour;
 };
 oop.inherits(Mode, TextMode);
 
@@ -195,3 +196,11 @@ oop.inherits(Mode, TextMode);
 
 exports.Mode = Mode;
 });
+                (function() {
+                    ace.require(["ace/mode/pascal"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            

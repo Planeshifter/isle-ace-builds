@@ -1,5 +1,5 @@
 "no use strict";
-;(function(window) {
+!(function(window) {
 if (typeof window.window != "undefined" && window.document)
     return;
 if (window.require && window.define)
@@ -134,7 +134,7 @@ window.define = function(id, deps, factory) {
         exports: {},
         factory: function() {
             var module = this;
-            var returnExports = factory.apply(this, deps.map(function(dep) {
+            var returnExports = factory.apply(this, deps.slice(0, factory.length).map(function(dep) {
                 switch (dep) {
                     // Because "require", "exports" and "module" aren't actual
                     // dependencies, we must handle them seperately.
@@ -217,7 +217,7 @@ window.onmessage = function(e) {
 };
 })(this);
 
-ace.define("ace/lib/oop",["require","exports","module"], function(require, exports, module) {
+ace.define("ace/lib/oop",[], function(require, exports, module) {
 "use strict";
 
 exports.inherits = function(ctor, superCtor) {
@@ -245,7 +245,7 @@ exports.implement = function(proto, mixin) {
 
 });
 
-ace.define("ace/lib/lang",["require","exports","module"], function(require, exports, module) {
+ace.define("ace/lib/lang",[], function(require, exports, module) {
 "use strict";
 
 exports.last = function(a) {
@@ -291,7 +291,7 @@ exports.copyArray = function(array){
     var copy = [];
     for (var i=0, l=array.length; i<l; i++) {
         if (array[i] && typeof array[i] == "object")
-            copy[i] = this.copyObject( array[i] );
+            copy[i] = this.copyObject(array[i]);
         else 
             copy[i] = array[i];
     }
@@ -309,14 +309,12 @@ exports.deepCopy = function deepCopy(obj) {
         }
         return copy;
     }
-    var cons = obj.constructor;
-    if (cons === RegExp)
+    if (Object.prototype.toString.call(obj) !== "[object Object]")
         return obj;
     
-    copy = cons();
-    for (var key in obj) {
+    copy = {};
+    for (var key in obj)
         copy[key] = deepCopy(obj[key]);
-    }
     return copy;
 };
 
@@ -349,7 +347,7 @@ exports.escapeRegExp = function(str) {
 };
 
 exports.escapeHTML = function(str) {
-    return str.replace(/&/g, "&#38;").replace(/"/g, "&#34;").replace(/'/g, "&#39;").replace(/</g, "&#60;");
+    return ("" + str).replace(/&/g, "&#38;").replace(/"/g, "&#34;").replace(/'/g, "&#39;").replace(/</g, "&#60;");
 };
 
 exports.getMatchOffsets = function(string, regExp) {
@@ -435,7 +433,7 @@ exports.delayedCall = function(fcn, defaultTimeout) {
 };
 });
 
-ace.define("ace/range",["require","exports","module"], function(require, exports, module) {
+ace.define("ace/range",[], function(require, exports, module) {
 "use strict";
 var comparePoints = function(p1, p2) {
     return p1.row - p2.row || p1.column - p2.column;
@@ -640,9 +638,9 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     };
     this.collapseRows = function() {
         if (this.end.column == 0)
-            return new Range(this.start.row, 0, Math.max(this.start.row, this.end.row-1), 0)
+            return new Range(this.start.row, 0, Math.max(this.start.row, this.end.row-1), 0);
         else
-            return new Range(this.start.row, 0, this.end.row, 0)
+            return new Range(this.start.row, 0, this.end.row, 0);
     };
     this.toScreenRange = function(session) {
         var screenPosStart = session.documentToScreenPosition(this.start);
@@ -674,7 +672,7 @@ Range.comparePoints = function(p1, p2) {
 exports.Range = Range;
 });
 
-ace.define("ace/apply_delta",["require","exports","module"], function(require, exports, module) {
+ace.define("ace/apply_delta",[], function(require, exports, module) {
 "use strict";
 
 function throwDeltaError(delta, errorText){
@@ -736,10 +734,10 @@ exports.applyDelta = function(docLines, delta, doNotValidate) {
             }
             break;
     }
-}
+};
 });
 
-ace.define("ace/lib/event_emitter",["require","exports","module"], function(require, exports, module) {
+ace.define("ace/lib/event_emitter",[], function(require, exports, module) {
 "use strict";
 
 var EventEmitter = {};
@@ -789,15 +787,20 @@ EventEmitter._signal = function(eventName, e) {
 
 EventEmitter.once = function(eventName, callback) {
     var _self = this;
-    callback && this.addEventListener(eventName, function newCallback() {
+    this.addEventListener(eventName, function newCallback() {
         _self.removeEventListener(eventName, newCallback);
         callback.apply(null, arguments);
     });
+    if (!callback) {
+        return new Promise(function(resolve) {
+            callback = resolve;
+        });
+    }
 };
 
 
 EventEmitter.setDefaultHandler = function(eventName, callback) {
-    var handlers = this._defaultHandlers
+    var handlers = this._defaultHandlers;
     if (!handlers)
         handlers = this._defaultHandlers = {_disabled_: {}};
     
@@ -814,13 +817,12 @@ EventEmitter.setDefaultHandler = function(eventName, callback) {
     handlers[eventName] = callback;
 };
 EventEmitter.removeDefaultHandler = function(eventName, callback) {
-    var handlers = this._defaultHandlers
+    var handlers = this._defaultHandlers;
     if (!handlers)
         return;
     var disabled = handlers._disabled_[eventName];
     
     if (handlers[eventName] == callback) {
-        var old = handlers[eventName];
         if (disabled)
             this.setDefaultHandler(eventName, disabled.pop());
     } else if (disabled) {
@@ -865,7 +867,7 @@ exports.EventEmitter = EventEmitter;
 
 });
 
-ace.define("ace/anchor",["require","exports","module","ace/lib/oop","ace/lib/event_emitter"], function(require, exports, module) {
+ace.define("ace/anchor",[], function(require, exports, module) {
 "use strict";
 
 var oop = require("./lib/oop");
@@ -990,7 +992,7 @@ var Anchor = exports.Anchor = function(doc, row, column) {
 
 });
 
-ace.define("ace/document",["require","exports","module","ace/lib/oop","ace/apply_delta","ace/lib/event_emitter","ace/range","ace/anchor"], function(require, exports, module) {
+ace.define("ace/document",[], function(require, exports, module) {
 "use strict";
 
 var oop = require("./lib/oop");
@@ -1103,7 +1105,7 @@ var Document = function(textOrLines) {
         return this.removeFullLines(firstRow, lastRow);
     };
     this.insertNewLine = function(position) {
-        console.warn("Use of document.insertNewLine is deprecated. Use insertMergedLines(position, [\'\', \'\']) instead.");
+        console.warn("Use of document.insertNewLine is deprecated. Use insertMergedLines(position, ['', '']) instead.");
         return this.insertMergedLines(position, ["", ""]);
     };
     this.insert = function(position, text) {
@@ -1281,28 +1283,23 @@ var Document = function(textOrLines) {
             return;
         }
         
-        if (isInsert && delta.lines.length > 20000)
+        if (isInsert && delta.lines.length > 20000) {
             this.$splitAndapplyLargeDelta(delta, 20000);
-        applyDelta(this.$lines, delta, doNotValidate);
-        this._signal("change", delta);
+        }
+        else {
+            applyDelta(this.$lines, delta, doNotValidate);
+            this._signal("change", delta);
+        }
     };
     
     this.$splitAndapplyLargeDelta = function(delta, MAX) {
         var lines = delta.lines;
-        var l = lines.length;
+        var l = lines.length - MAX + 1;
         var row = delta.start.row; 
         var column = delta.start.column;
-        var from = 0, to = 0;
-        do {
-            from = to;
+        for (var from = 0, to = 0; from < l; from = to) {
             to += MAX - 1;
             var chunk = lines.slice(from, to);
-            if (to > l) {
-                delta.lines = chunk;
-                delta.start.row = row + from;
-                delta.start.column = column;
-                break;
-            }
             chunk.push("");
             this.applyDelta({
                 start: this.pos(row + from, column),
@@ -1310,7 +1307,11 @@ var Document = function(textOrLines) {
                 action: delta.action,
                 lines: chunk
             }, true);
-        } while(true);
+        }
+        delta.lines = lines.slice(from);
+        delta.start.row = row + from;
+        delta.start.column = column;
+        this.applyDelta(delta, true);
     };
     this.revertDelta = function(delta) {
         this.applyDelta({
@@ -1328,7 +1329,7 @@ var Document = function(textOrLines) {
             if (index < 0)
                 return {row: i, column: index + lines[i].length + newlineLength};
         }
-        return {row: l-1, column: lines[l-1].length};
+        return {row: l-1, column: index + lines[l-1].length + newlineLength};
     };
     this.positionToIndex = function(pos, startRow) {
         var lines = this.$lines || this.getAllLines();
@@ -1346,7 +1347,7 @@ var Document = function(textOrLines) {
 exports.Document = Document;
 });
 
-ace.define("ace/worker/mirror",["require","exports","module","ace/range","ace/document","ace/lib/lang"], function(require, exports, module) {
+ace.define("ace/worker/mirror",[], function(require, exports, module) {
 "use strict";
 
 var Range = require("../range").Range;
@@ -1408,7 +1409,7 @@ var Mirror = exports.Mirror = function(sender) {
 
 });
 
-ace.define("ace/mode/html/saxparser",["require","exports","module"], function(require, exports, module) {
+ace.define("ace/mode/html/saxparser",[], function(require, exports, module) {
 module.exports = (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({
 1:[function(_dereq_,module,exports){
 function isScopeMarker(node) {
@@ -1912,6 +1913,7 @@ var SpecialElements = {
 		'button',
 		'caption',
 		'center',
+		'col',
 		'colgroup',
 		'dd',
 		'details',
@@ -2115,7 +2117,7 @@ Tokenizer.prototype._emitToken = function(token) {
 	}
 	this._tokenHandler.processToken(token);
 	if (token.type === 'StartTag' && token.selfClosing && !this._tokenHandler.isSelfClosingFlagAcknowledged()) {
-		// this._parseError('non-void-element-with-trailing-solidus', {name: token.name});
+		this._parseError('non-void-element-with-trailing-solidus', {name: token.name});
 	}
 };
 
@@ -2148,8 +2150,6 @@ Tokenizer.prototype.tokenize = function(source) {
 
 	this._inputStream.eof = true;
 
-	this._noUnclosedBrackets = 0;
-
 	var tokenizer = this;
 
 	while (this._state.call(this, this._inputStream));
@@ -2164,8 +2164,6 @@ Tokenizer.prototype.tokenize = function(source) {
 			tokenizer.setState(character_reference_in_data_state);
 		} else if (data === '<') {
 			tokenizer.setState(tag_open_state);
-		} else if (data === '-' ) {
-			tokenizer.setState(markup_declaration_open_state);
 		} else if (data === '\u0000') {
 			tokenizer._emitToken({type: 'Characters', data: data});
 			buffer.commit();
@@ -2884,8 +2882,6 @@ Tokenizer.prototype.tokenize = function(source) {
 			buffer.unget(data);
 		} else if (data === "'") {
 			tokenizer.setState(attribute_value_single_quoted_state);
-		} else if (data === "{") {
-			tokenizer.setState(attribute_value_react_state);
 		} else if (data === '>') {
 			tokenizer._parseError("expected-attribute-value-but-got-right-bracket");
 			tokenizer._emitCurrentToken();
@@ -2946,34 +2942,6 @@ Tokenizer.prototype.tokenize = function(source) {
 		return true;
 	}
 
-	function attribute_value_react_state(buffer) {
-		var data = buffer.char();
-		if (data === InputStream.EOF) {
-			tokenizer._parseError("eof-in-attribute-value-react");
-			buffer.unget(data);
-			tokenizer.setState(data_state);
-		} else if (data === "}") {
-			if ( this._noUnclosedBrackets === 0 ) {
-				tokenizer.setState(after_attribute_value_state);
-			} else {
-				this._noUnclosedBrackets -= 1;
-			}
-		} else if (data === '&') {
-			this._additionalAllowedCharacter = "}";
-			tokenizer.setState(character_reference_in_attribute_value_state);
-		} else if (data === '\u0000') {
-			tokenizer._parseError("invalid-codepoint");
-			tokenizer._currentAttribute().nodeValue += "\uFFFD";
-		} else {
-			if ( data === "{" ) {
-				this._noUnclosedBrackets += 1;
-			}
-			console.log( this._noUnclosedBrackets )
-			tokenizer._currentAttribute().nodeValue += data + buffer.matchUntil("\u0000|{|[}&]");
-		}
-		return true;
-	}
-
 	function attribute_value_unquoted_state(buffer) {
 		var data = buffer.char();
 		if (data === InputStream.EOF) {
@@ -3013,8 +2981,6 @@ Tokenizer.prototype.tokenize = function(source) {
 			tokenizer.setState(attribute_value_double_quoted_state);
 		else if (this._additionalAllowedCharacter === '\'')
 			tokenizer.setState(attribute_value_single_quoted_state);
-		else if (this._additionalAllowedCharacter === '}')
-			tokenizer.setState(attribute_value_react_state);
 		else if (this._additionalAllowedCharacter === '>')
 			tokenizer.setState(attribute_value_unquoted_state);
 		return true;
@@ -3200,9 +3166,6 @@ Tokenizer.prototype.tokenize = function(source) {
 			buffer.unget(data);
 			tokenizer.setState(data_state);
 		} else if (data === '>') {
-			tokenizer._emitToken(tokenizer._currentToken);
-			tokenizer.setState(data_state); 
-		} else if (data === '-') {
 			tokenizer._emitToken(tokenizer._currentToken);
 			tokenizer.setState(data_state);
 		} else if (data === '!') {
@@ -3763,10 +3726,10 @@ function TreeBuilder() {
 		processEOF: function() {
 			tree.generateImpliedEndTags();
 			if (tree.openElements.length > 2) {
-				// tree.parseError('expected-closing-tag-but-got-eof');
+				tree.parseError('expected-closing-tag-but-got-eof');
 			} else if (tree.openElements.length == 2 &&
 				tree.openElements.item(1).localName != 'body') {
-				// tree.parseError('expected-closing-tag-but-got-eof');
+				tree.parseError('expected-closing-tag-but-got-eof');
 			} else if (tree.context && tree.openElements.length > 1) {
 			}
 		},
@@ -4437,45 +4400,6 @@ function TreeBuilder() {
 		br: 'startTagVoidFormatting',
 		embed: 'startTagVoidFormatting',
 		img: 'startTagVoidFormatting',
-		checkboxinput: 'startTagVoidFormatting',
-		colorpicker: 'startTagVoidFormatting',
-		dataexplorer: 'startTagVoidFormatting',
-		datatable: 'startTagVoidFormatting',
-		densityplot: 'startTagVoidFormatting',
-		draggablelist: 'startTagVoidFormatting',
-		feedbackbuttons: 'startTagVoidFormatting',
-		freetextquestion: 'startTagVoidFormatting',
-		functionplot: 'startTagVoidFormatting',
-		lessonsubmit: 'startTagVoidFormatting',
-		matchlistquestion: 'startTagVoidFormatting',
-		multiplechoicequestion: 'startTagVoidFormatting',
-		numberinput: 'startTagVoidFormatting',
-		routput: 'startTagVoidFormatting',
-		rplot: 'startTagVoidFormatting',
-		rshell: 'startTagVoidFormatting',
-		rtable: 'startTagVoidFormatting',
-		routput: 'startTagVoidFormatting',
-		selectinput: 'startTagVoidFormatting',
-		sliderinput: 'startTagVoidFormatting',
-		surveygenerator: 'startTagVoidFormatting',
-		tex: 'startTagVoidFormatting',
-		textinput: 'startTagVoidFormatting',
-		timer: 'startTagVoidFormatting',
-		venndiagrambuilder: 'startTagVoidFormatting',
-		victoryanimation: 'startTagVoidFormatting',
-		victoryarea: 'startTagVoidFormatting',
-		victoryaxis: 'startTagVoidFormatting',
-		victorybar: 'startTagVoidFormatting',
-		victorycandlestick: 'startTagVoidFormatting',
-		victoryerrorbar: 'startTagVoidFormatting',
-		victorygroup: 'startTagVoidFormatting',
-		victorylabel: 'startTagVoidFormatting',
-		victoryline: 'startTagVoidFormatting',
-		victoryscatter: 'startTagVoidFormatting',
-		victorytheme: 'startTagVoidFormatting',
-		victorytooltip: 'startTagVoidFormatting',
-		victoryvoronoi: 'startTagVoidFormatting',
-		videoplayer: 'startTagVoidFormatting',
 		keygen: 'startTagVoidFormatting',
 		wbr: 'startTagVoidFormatting',
 		param: 'startTagParamSourceTrack',
@@ -4491,18 +4415,16 @@ function TreeBuilder() {
 		h5: 'startTagHeading',
 		h6: 'startTagHeading',
 		caption: 'startTagMisplaced',
+		col: 'startTagMisplaced',
 		colgroup: 'startTagMisplaced',
 		frame: 'startTagMisplaced',
 		frameset: 'startTagFrameset',
 		tbody: 'startTagMisplaced',
 		td: 'startTagMisplaced',
-		tableitem: 'startTagMisplaced',
 		tfoot: 'startTagMisplaced',
 		th: 'startTagMisplaced',
-		tableheaderitem: 'startTagMisplaced',
 		thead: 'startTagMisplaced',
 		tr: 'startTagMisplaced',
-		tablerow: 'startTagMisplaced',
 		option: 'startTagOptionOptgroup',
 		optgroup: 'startTagOptionOptgroup',
 		math: 'startTagMath',
@@ -4791,6 +4713,7 @@ function TreeBuilder() {
 	};
 
 	modes.inBody.startTagImage = function(name, attributes) {
+		tree.parseError('unexpected-start-tag-treated-as', {originalName: 'image', newName: 'img'});
 		this.processStartTag('img', attributes);
 	};
 
@@ -5038,14 +4961,13 @@ function TreeBuilder() {
 	modes.inCaption.start_tag_handlers = {
 		html: 'startTagHtml',
 		caption: 'startTagTableElement',
+		col: 'startTagTableElement',
 		colgroup: 'startTagTableElement',
 		tbody: 'startTagTableElement',
 		td: 'startTagTableElement',
-		tableitem: 'startTagTableElement',
 		tfoot: 'startTagTableElement',
 		thead: 'startTagTableElement',
 		tr: 'startTagTableElement',
-		tablerow: 'startTagTableElement',
 		'-default': 'startTagOther'
 	};
 
@@ -5053,15 +4975,14 @@ function TreeBuilder() {
 		caption: 'endTagCaption',
 		table: 'endTagTable',
 		body: 'endTagIgnore',
+		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		tbody: 'endTagIgnore',
 		td: 'endTagIgnore',
-		tableitem: 'endTagIgnore',
 		tfood: 'endTagIgnore',
 		thead: 'endTagIgnore',
 		tr: 'endTagIgnore',
-		tablerow: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -5118,13 +5039,12 @@ function TreeBuilder() {
 	modes.inCell.start_tag_handlers = {
 		html: 'startTagHtml',
 		caption: 'startTagTableOther',
+		col: 'startTagTableOther',
 		colgroup: 'startTagTableOther',
 		tbody: 'startTagTableOther',
 		td: 'startTagTableOther',
-		tableitem: 'startTagTableOther',
 		tfoot: 'startTagTableOther',
 		th: 'startTagTableOther',
-		tableheaderitem: 'startTagTableOther',
 		thead: 'startTagTableOther',
 		tr: 'startTagTableOther',
 		'-default': 'startTagOther'
@@ -5133,10 +5053,9 @@ function TreeBuilder() {
 	modes.inCell.end_tag_handlers = {
 		td: 'endTagTableCell',
 		th: 'endTagTableCell',
-		tableheaderitem: 'endTagTableCell',
-		tableitem: 'endTagTableCell',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
+		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		table: 'endTagImply',
@@ -5144,7 +5063,6 @@ function TreeBuilder() {
 		tfoot: 'endTagImply',
 		thead: 'endTagImply',
 		tr: 'endTagImply',
-		tablerow: 'endTagImply',
 		'-default': 'endTagOther'
 	};
 
@@ -5211,11 +5129,13 @@ function TreeBuilder() {
 
 	modes.inColumnGroup.start_tag_handlers = {
 		html: 'startTagHtml',
+		col: 'startTagCol',
 		'-default': 'startTagOther'
 	};
 
 	modes.inColumnGroup.end_tag_handlers = {
 		colgroup: 'endTagColgroup',
+		col: 'endTagCol',
 		'-default': 'endTagOther'
 	};
 
@@ -5457,6 +5377,7 @@ function TreeBuilder() {
 		html: 'startTagHtml',
 		caption: 'startTagCaption',
 		colgroup: 'startTagColgroup',
+		col: 'startTagCol',
 		table: 'startTagTable',
 		tbody: 'startTagRowGroup',
 		tfoot: 'startTagRowGroup',
@@ -5464,9 +5385,6 @@ function TreeBuilder() {
 		td: 'startTagImplyTbody',
 		th: 'startTagImplyTbody',
 		tr: 'startTagImplyTbody',
-		tablerow: 'startTagImplyTbody',
-		tableheaderitem: 'startTagImplyTbody',
-		tableitem: 'startTagImplyTbody',
 		style: 'startTagStyleScript',
 		script: 'startTagStyleScript',
 		input: 'startTagInput',
@@ -5478,6 +5396,7 @@ function TreeBuilder() {
 		table: 'endTagTable',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
+		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		tbody: 'endTagIgnore',
@@ -5486,9 +5405,6 @@ function TreeBuilder() {
 		th: 'endTagIgnore',
 		thead: 'endTagIgnore',
 		tr: 'endTagIgnore',
-		tablerow: 'endTagIgnore',
-		tableheaderitem: 'endTagIgnore',
-		tableitem: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -5660,10 +5576,8 @@ function TreeBuilder() {
 		tr: 'startTagTr',
 		td: 'startTagTableCell',
 		th: 'startTagTableCell',
-		tablerow: 'startTagTr',
-		tableheaderitem: 'startTagTableCell',
-		tableitem: 'startTagTableCell',
 		caption: 'startTagTableOther',
+		col: 'startTagTableOther',
 		colgroup: 'startTagTableOther',
 		tbody: 'startTagTableOther',
 		tfoot: 'startTagTableOther',
@@ -5678,14 +5592,12 @@ function TreeBuilder() {
 		thead: 'endTagTableRowGroup',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
+		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		td: 'endTagIgnore',
 		th: 'endTagIgnore',
 		tr: 'endTagIgnore',
-		tablerow: 'endTagIgnore',
-		tableheaderitem: 'endTagIgnore',
-		tableitem: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -5773,9 +5685,6 @@ function TreeBuilder() {
 		tr: 'endTagTableElements',
 		td: 'endTagTableElements',
 		th: 'endTagTableElements',
-		tablerow: 'endTagTableElements',
-		tableheaderitem: 'endTagTableElements',
-		tableitem: 'endTagTableElements',
 		'-default': 'endTagOther'
 	};
 
@@ -5876,9 +5785,6 @@ function TreeBuilder() {
 		tr: 'startTagTable',
 		td: 'startTagTable',
 		th: 'startTagTable',
-		tablerow: 'startTagTable',
-		tableheaderitem: 'startTagTable',
-		tableitem: 'startTagTable',
 		'-default': 'startTagOther'
 	};
 
@@ -5891,9 +5797,6 @@ function TreeBuilder() {
 		tr: 'endTagTable',
 		td: 'endTagTable',
 		th: 'endTagTable',
-		tablerow: 'endTagTable',
-		tableheaderitem: 'endTagTable',
-		tableitem: 'endTagTable',
 		'-default': 'endTagOther'
 	};
 
@@ -5929,33 +5832,29 @@ function TreeBuilder() {
 		html: 'startTagHtml',
 		td: 'startTagTableCell',
 		th: 'startTagTableCell',
-		tableheaderitem: 'startTagTableCell',
-		tableitem: 'startTagTableCell',
 		caption: 'startTagTableOther',
+		col: 'startTagTableOther',
 		colgroup: 'startTagTableOther',
 		tbody: 'startTagTableOther',
 		tfoot: 'startTagTableOther',
 		thead: 'startTagTableOther',
 		tr: 'startTagTableOther',
-		tablerow: 'startTagTableOther',
 		'-default': 'startTagOther'
 	};
 
 	modes.inRow.end_tag_handlers = {
 		tr: 'endTagTr',
-		tablerow: 'endTagTr',
 		table: 'endTagTable',
 		tbody: 'endTagTableRowGroup',
 		tfoot: 'endTagTableRowGroup',
 		thead: 'endTagTableRowGroup',
 		body: 'endTagIgnore',
 		caption: 'endTagIgnore',
+		col: 'endTagIgnore',
 		colgroup: 'endTagIgnore',
 		html: 'endTagIgnore',
 		td: 'endTagIgnore',
 		th: 'endTagIgnore',
-		tableheaderitem: 'endTagIgnore',
-		tableitem: 'endTagIgnore',
 		'-default': 'endTagOther'
 	};
 
@@ -6520,10 +6419,9 @@ TreeBuilder.prototype.resetInsertionMode = function() {
 		if (node.namespaceURI === "http://www.w3.org/1999/xhtml") {
 			if (node.localName === 'select')
 				return this.setInsertionMode('inSelect');
-			if (node.localName === 'td' || node.localName === 'th' || 
-				node.localName === 'tableitem' || node.localName === 'tableheaderitem' )
+			if (node.localName === 'td' || node.localName === 'th')
 				return this.setInsertionMode('inCell');
-			if (node.localName === 'tr' || node.localName === 'tablerow')
+			if (node.localName === 'tr')
 				return this.setInsertionMode('inRow');
 			if (node.localName === 'tbody' || node.localName === 'thead' || node.localName === 'tfoot')
 				return this.setInsertionMode('inTableBody');
@@ -6805,8 +6703,6 @@ module.exports={
 		"Unexpected end of file in attribute value (\").",
 	"eof-in-attribute-value-single-quote":
 		"Unexpected end of file in attribute value (').",
-	"eof-in-attribute-value-react":
-		"Unexpected end of file in JSX attribute value.",
 	"eof-in-attribute-value-no-quotes":
 		"Unexpected end of file in attribute value.",
 	"eof-after-attribute-value":
@@ -6983,7 +6879,7 @@ module.exports={
 		"Unexpected end tag ({name}). Expected end of file.",
 	"unexpected-end-table-in-caption":
 		"Unexpected end table tag in caption. Generates implied end caption.",
-	"end-html-in-innerhtml":
+	"end-html-in-innerhtml": 
 		"Unexpected html end tag in inner html mode.",
 	"eof-in-table":
 		"Unexpected end of file. Expected table content.",
@@ -10951,7 +10847,7 @@ module.exports=_dereq_(15)
 
 });
 
-ace.define("ace/mode/html_worker",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/worker/mirror","ace/mode/html/saxparser"], function(require, exports, module) {
+ace.define("ace/mode/html_worker",[], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -10963,7 +10859,7 @@ var errorTypes = {
     "expected-doctype-but-got-start-tag": "info",
     "expected-doctype-but-got-chars": "info",
     "non-html-root": "info"
-}
+};
 
 var Worker = exports.Worker = function(sender) {
     Mirror.call(this, sender);
@@ -11014,7 +10910,7 @@ oop.inherits(Worker, Mirror);
 
 });
 
-ace.define("ace/lib/es5-shim",["require","exports","module"], function(require, exports, module) {
+ace.define("ace/lib/es5-shim",[], function(require, exports, module) {
 
 function Empty() {}
 

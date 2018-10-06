@@ -5,3 +5,11 @@ exports.snippetText =undefined;
 exports.scope = "gitignore";
 
 });
+                (function() {
+                    window.require(["ace/snippets/gitignore"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            

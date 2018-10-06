@@ -5,3 +5,11 @@ exports.snippetText =undefined;
 exports.scope = "asciidoc";
 
 });
+                (function() {
+                    window.require(["ace/snippets/asciidoc"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            
